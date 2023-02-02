@@ -629,6 +629,8 @@ open class Chart: UIControl {
                     // Give some space from the vertical line
                     if !xLabelsOnCenter {
                         label.frame.origin.x += padding
+                    } else {
+                        label.frame.origin.x -= label.frame.size.width / 2
                     }
                 }
             }
