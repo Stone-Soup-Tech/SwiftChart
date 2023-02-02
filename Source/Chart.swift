@@ -71,6 +71,12 @@ open class Chart: UIControl {
         }
       }
     }
+    
+    @IBInspectable
+    open var xLabelsOnCenter: Bool = false
+    
+    @IBInspectable
+    open var drawChartBorder: Bool = true
 
     /**
     The values to display as labels on the x-axis. You can format these values  with the `xLabelFormatter` attribute. 
@@ -350,7 +356,9 @@ open class Chart: UIControl {
             })
         }
 
-        drawAxes()
+        if drawChartBorder {
+            drawAxes()
+        }
 
         if showXLabelsAndGrid && (xLabels != nil || series.count > 0) {
             drawLabelsAndGridOnXAxis()
@@ -565,7 +573,7 @@ open class Chart: UIControl {
         }
 
         let scaled = scaleValuesOnXAxis(labels)
-        let padding: CGFloat = 5
+        let padding: CGFloat = xLabelsOnCenter ? 0 : 5
         scaled.enumerated().forEach { (i, value) in
             let x = CGFloat(value)
             let isLastLabel = x == drawingWidth
@@ -596,7 +604,12 @@ open class Chart: UIControl {
             if xLabelsOrientation == .horizontal {
                 // Add left padding
                 label.frame.origin.y -= (label.frame.height - bottomInset) / 2
-                label.frame.origin.x += padding
+                
+                if xLabelsOnCenter {
+                    label.frame.origin.x -= label.frame.size.width / 2
+                } else {
+                    label.frame.origin.x += padding
+                }
 
                 // Set label's text alignment
                 label.frame.size.width = (drawingWidth / CGFloat(labels.count)) - padding * 2
@@ -614,7 +627,9 @@ open class Chart: UIControl {
                     label.frame.origin.x += ((drawingWidth / CGFloat(labels.count)) / 2) - (label.frame.size.width / 2)
                 } else {
                     // Give some space from the vertical line
-                    label.frame.origin.x += padding
+                    if !xLabelsOnCenter {
+                        label.frame.origin.x += padding
+                    }
                 }
             }
             self.addSubview(label)
